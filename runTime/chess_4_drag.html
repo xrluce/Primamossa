@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Chess Board</title>
+
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="css/my_index_2.css">
+
+    <script src="./js/jquery-1.11.1.js"></script>
+    <script src="js/utility.js"></script>
+    <script src="js/chess_4drag.js" type="text/javascript"></script>
+    <script src="js/provadb.js"></script>
+
+
+    <style type="text/css">
+        html, body {
+            overflow: auto;
+        }
+    </style>
+    <script language="javascript" type="text/javascript">
+        var chessboardObj;
+        var chessboardObj2;
+        var chessboardObj3;
+        var aggiungi;
+        function k() {
+
+            /* this create a plugin with little chessboard  not responsive*/
+            var props = {continua: 0, _div: 'largechess', little: false};
+            chessboardObj = $('#largechess').chessboard(props);
+            $('#move_e2e4').click(function () {chessboardObj.init_cb(3, "_e2-e4", 1, 0);   });
+            $('#move_e7e5').click(function () {chessboardObj.init_cb(3, "_e7-e5", 2, 0);   });
+            $('#mytestfield').click(function(){chessboardObj.init_cb(1, document.getElementById('testfield').value,0,0);});
+
+
+            /* this create a plugin with a big chessboard  responsive */
+
+             var props3 = {continua: 0, _div: 'smallchess', little: true};
+            chessboardObj3 = $('#smallchess').chessboard(props3);
+             var props4 = {continua: 0, _div: 'smallchess2', little: true};
+            chessboardObj4 = $('#smallchess2').chessboard(props4);
+
+
+            $('#move_textarea').click(function () {
+               console.log(document.getElementById('testfield').value);
+                chessboardObj.init_cb(33, document.getElementById('testfield').value, 0, 0);
+            });
+
+
+            $('#move_textarea2').click(function () {
+                    chessboardObj3.init_cb(1, document.getElementById('testfield').value, 0, 0);
+            });
+
+
+            $('#move_textarea3').click(function () {
+                    chessboardObj4.init_cb(1, document.getElementById('testfield').value, 0, 0);
+            });
+
+            //prova
+
+            $('#showConsole').click(function () {
+                    chessboardObj.showConsole();
+                    console.log('	this.fentrans->',chessboardObj.fentrans);
+                    chessboardObj3.showConsole();
+                    console.log('	this.fentrans->',chessboardObj3.fentrans);
+            });
+            console.log('cb',window.cb);
+        } ;
+
+        $(window).resize(function () {
+            chessboardObj.init_cb(11, "", 0, 0);
+            chessboardObj2.init_cb(11, "", 0, 0);
+            $("#yes").html("width->" + $(window).width());
+        });
+
+        function cbchange(elem, e) {
+            if ($('#termsCheck').prop('checked')) {
+                chessboardObj.setAnimation(true);
+            } else {
+                chessboardObj.setAnimation(false);
+            }
+        }
+        ;
+
+        function cleans() {
+            $("#yes").html("");
+        }
+        ;
+
+        function get_flag_animation() {
+            flag_animation = chessboardObj.getAnimation();
+            $("#animation").val(flag_animation);
+        }
+        ;
+
+        function set_property() {
+            chessboardObj.setNumberMove(5);
+        }
+        ;
+
+        (function ($) {
+            jQuery.scaleSize = function (maxW, maxH, currW, currH) {
+                var ratio = currH / currW;
+                if (currW >= maxW && ratio <= 1) {
+                    currW = maxW;
+                    currH = currW * ratio;
+                } else if (currH >= maxH) {
+                    currH = maxH;
+                    currW = currH / ratio;
+                }
+                return [currW, currH];
+            };
+
+        })(jQuery);
+    </script>
+
+</head>
+
+<body onload="k()">
+<div class="container">
+    <div class="row">
+        <div class="navbar-header">
+            <h1> Chess Board </h1>
+
+            <div id="lb">
+                <label>Animation <input id="termsCheck" onchange="cbchange(this, event)" type="checkbox" name="terms"
+                                        checked/>
+                    <button type="button" onmousedown="set_property( );">set property</button>
+                </label> <br>
+                <button type="button" onmousedown="get_flag_animation();">get flag animation</button>
+                <input type="text" id="animation">
+            </div>
+           <!--
+             <textarea name="testfield" id="testfield" cols="40" rows="3" style="display:block">_c2-c4 _e7-e6 Nb1-c3 _d7-d5 _d2-d4 Ng8-f6 _c4xd5 _e6xd5</textarea>
+           -->
+            <textarea name="testfield" id="testfield" cols="40" rows="3" style="display:block">_e2-e4 _g7-g6 _d2-d4 Bf8-g7 Nb1-c3 _c7-c6 Bf1-c4 _d7-d6 Qd1-f3 _e7-e6 Ng1-e2 Qd8-e7 _a2-a4 Nb8-d7 Bc4-a2 _e6-e5 _d4-d5 _c6-c5 Nc3-b5 Nd7-f8 Bc1-d2 _a7-a6 Nb5-a3 Ng8-f6 Ne2-c3 _b7-b6 Na3-c4 Ra8-b8 ___0-0 Nf8-d7 Qf3-e2 Nf6-h5 _g2-g3 ___0-0 Nc4-e3 Nd7-f6 Ba2-c4 Rb8-a8 Ne3-g2 Nf6-e8 _f2-f4 Ne8-c7 _f4-f5 Bc8-d7 _g3-g4 Nh5-f4 Ng2xf4 _e5xf4 Bd2xf4 _b6-b5 _e4-e5 _d6xe5 Bf4-g3 _b5xc4 _f5-f6 Bg7xf6 _d5-d6 Qe7-e6 _d6xc7 Bf6-g7 Ra1-d1 Qe6xg4 Qe2xg4 Bd7xg4 Rd1-d5 Bg4-e6 Rd5xc5 _f7-f6 Rf1-d1 Rf8-c8 Nc3-e4 Bg7-f8 Rc5-c6 Kg8-f7 Ne4-d6 Bf8xd6 Rd1xd6 Rc8-e8 Rd6xe6 Re8xe6 _c7Qc8 Ra8xc8</textarea>
+
+            <button id="move_textarea" type="button" style="display:block">Big Move textarea</button>
+ 
+            <button type="button" id="move_e2e4">little _e2-e4</button>
+            <button type="button" id="move_e7e5">e7e5</button>
+            <button type="button" id="mytestfield">little textarea</button>
+    
+            <button type="button" id="move_textarea2">little textarea2</button>
+            <button type="button" id="showConsole">showConsole</button>
+            <button type="button" id="showFentrans">showFentrans</button>
+            <div>
+              <button type="button"  onclick="myFunction('_11QQ')">11QQ</button>
+              <button type="button"  onclick="myFunction('_12Q')">12Q</button>
+
+              <button type="button"  onclick="myFunction('_13Q')">_13Q</button>
+              <button type="button"  onclick="myFunction('_21N')">_21N</button>
+
+              <button type="button"  onclick="myFunction('_31')">_31</button>
+              <button type="button"  onclick="myFunction('_32N')">_32N</button>
+              <button type="button"  onclick="myFunction('_41N')">_41N</button>
+
+              <button type="button"  onclick="myFunction('_56')">_56</button>
+
+
+              <button type="button"  onclick="myFunction('_62')">_62</button>
+              <button type="button"  onclick="myFunction('_63')">_63</button>
+                <button type="button"  onclick="myFunction('_71QN')">_71QN</button>
+              <button type="button"  onclick="myFunction('_72')">_72</button>
+              <button type="button"  onclick="myFunction('_81Q')">_81Q</button>
+              <button type="button"  onclick="myFunction('_82')">_82</button>
+            </div>
+            <p id="yes">o</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 chess-grid chess_container" id="largechess" style="position: relative;">largechess </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 chess-grid chess_container" id="smallchess" style="position: relative;">smallchess </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 chess-grid chess_container" id="smallchess2" style="position: relative;border:1px solid blue;"></div>
+
+    </div>
+</div>
+<script>
+function myFunction(str) {
+    var x = document.getElementById("testfield")
+    var myvar=window[str];
+    x.value = myvar;
+}
+</script>
+<script src="./js/bootstrap.js"></script>
+
+</body>
+</html>

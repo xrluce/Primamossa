@@ -1,0 +1,117 @@
+<html>
+  <head>
+	<meta charset="utf-8">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	
+	var charts_references;
+	var http;
+	
+	google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(function(){
+		initCharts();
+	});
+	
+	function initCharts(){
+		charts_references={
+			"chart_div_sx":new google.visualization.ColumnChart(document.getElementById("chart_div_sx")),
+			"chart_div_cx":new google.visualization.PieChart(document.getElementById("chart_div_cx")),
+			"chart_div_dx":new google.visualization.ColumnChart(document.getElementById("chart_div_dx"))
+		};
+		document.getElementById("bottone1").disabled=0;
+		document.getElementById("bottone2").disabled=0;
+	}
+	
+	function disegnaColonne(div_id,options,intestazioni,str_x,str_y){
+		var arr_x=str_x.split("/");
+		var arr_y=str_y.split("/");
+		var dati_organizzati = [intestazioni];
+		for(var i=0;i<arr_x.length;i++){
+			dati_organizzati.push([
+				arr_x[i],
+				arr_y[i]*1
+			]);
+		}
+		var data = google.visualization.arrayToDataTable(dati_organizzati);
+		charts_references[div_id].draw(data, options);
+	}
+	
+	function disegnaTorta(div_id,options,intestazioni,str){
+		var arr=str.length?str.split("/"):[];
+		var dati_organizzati = [intestazioni];
+		var labels=["Vincenti","Perdenti","Pari"];
+		for(var i=0;i<labels.length;i++){
+			dati_organizzati.push([
+				labels[i],
+				arr[i]*1
+			]);
+		}
+		var data = google.visualization.arrayToDataTable(dati_organizzati);
+		charts_references[div_id].draw(data, options);
+	}
+	
+	function updateCharts(url,posizione,lunghezza){
+		http = new XMLHttpRequest();
+		var params = "posizione="+parseInt(posizione)+"&lunghezza="+parseInt(lunghezza);
+		http.open("POST", url, true);
+
+		//Send the proper header information along with the request
+		http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		http.setRequestHeader("Content-length", params.length);
+		http.setRequestHeader("Connection", "close");
+
+		http.onreadystatechange = function() {//Call a function when the state changes.
+			if(http.readyState == 4 && http.status == 200) {
+				
+				var tutto=http.responseText;
+				
+				var ar=tutto.split("^");
+				var quantita1 =ar[0];// "1/8/4/6/1";
+				var anni1 = ar[1];// "1976/1977/1978/1979/1980";
+				var torta = ar[2];// "500/1000/600";
+				var quantita2 =ar[3];// "1/8/4/6/1";
+				var anni2 = ar[4];// "1976/1977/1978/1979/1980";				
+				
+				disegnaColonne(
+					"chart_div_sx",
+					{
+						legend:{position:'bottom'}
+					},
+					['Anno', 'Elo Massimo'],
+					anni1,
+					quantita1
+				);
+				disegnaTorta(
+					"chart_div_cx",
+					{
+						legend:{position:'none'}
+					},
+					['a', 'b'],
+					torta
+				);
+				disegnaColonne(
+					"chart_div_dx",
+					{
+						legend:{position:'bottom'}
+					},
+					['Anno', 'Numero partite'],
+					anni2,
+					quantita2
+				);
+			}
+		}
+		http.send(params);
+	}
+	
+    </script>
+  </head>
+  <body>
+    <div id="chart_div_sx" style="width: 38%; height: 200px; float:left;"></div>
+    <div id="chart_div_cx" style="width: 20%; height: 200px; float:left;"></div>
+    <div id="chart_div_dx" style="width: 38%; height: 200px; float:left;"></div>
+	<p>
+	<button onclick="updateCharts('stuff/esempio.text',0,82);" disabled id="bottone1">Load esempio.text posizione 0 lunghezza 82</button>
+	<button onclick="updateCharts('stuff/esempio2.text',0,82);" disabled id="bottone2">Load esempio2.text posizione 0 lunghezza 82</button>
+	</p>
+  </body>
+</html>
